@@ -10,7 +10,8 @@
   "require": {
     "php": ">=7.4.0",
     "ext-json": "*",
-    "ext-dbase": "*"
+    "ext-dbase": "*",
+    "ext-iconv": "*"
   },
   "require-dev": {
   },

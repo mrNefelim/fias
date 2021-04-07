@@ -21,7 +21,6 @@ class Parser implements ParserInterface
     public function each($callback): Generator
     {
         foreach ($this->database->getRecords() as $record) {
-            echo '----------------'.PHP_EOL;
             yield $callback($this->fill($record));
         }
     }
@@ -36,7 +35,7 @@ class Parser implements ParserInterface
         $columns = $this->database->getColumns();
 
         foreach ($record as $fieldId => $field) {
-            $methodName = 'set'.$columns[$fieldId];
+            $methodName = 'set' . $columns[$fieldId];
             if (method_exists($address, $methodName)) {
                 $address->{$methodName}($field);
             }

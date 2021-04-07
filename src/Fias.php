@@ -2,6 +2,7 @@
 
 namespace Fias;
 
+use Fias\Dbf\CouldNotConnectException;
 use Fias\Dbf\Dbf;
 use Fias\Downloader\Downloader;
 use Fias\Downloader\DownloadException;
@@ -13,6 +14,7 @@ class Fias implements FiasInterface
 {
     /**
      * @inheritDoc
+     * @throws CouldNotConnectException
      */
     public static function getAddresses(): Generator
     {
@@ -28,29 +30,13 @@ class Fias implements FiasInterface
     /**
      * @inheritDoc
      */
-    public static function getActiveAddresses(): Generator
-    {
-        $fileList = Fias::downloadFileList('https://fias.nalog.ru/Updates');
-
-        foreach ($fileList as $item) {
-            foreach (Fias::parse($item) as $addressObject) {
-                if (Fias::isActive($addressObject)) {
-                    yield $addressObject;
-                }
-            }
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
     public static function downloadFileList(string $url): array
     {
         try {
             $folderPath = (new Downloader())->download($url);
 
             return array_map(function ($link) use ($folderPath) {
-                return $folderPath.'/'.$link;
+                return $folderPath . '/' . $link;
             }, array_diff(scandir($folderPath), ['..', '.']));
         } catch (DownloadException $exception) {
             throw new FiasException($exception->getMessage());
@@ -59,6 +45,7 @@ class Fias implements FiasInterface
 
     /**
      * @inheritDoc
+     * @throws CouldNotConnectException
      */
     public static function parse(string $fileName): Generator
     {
@@ -71,6 +58,23 @@ class Fias implements FiasInterface
         return (new Parser($dataBase))->each(function ($fileName) {
             return $fileName;
         });
+    }
+
+    /**
+     * @inheritDoc
+     * @throws CouldNotConnectException
+     */
+    public static function getActiveAddresses(): Generator
+    {
+        $fileList = Fias::downloadFileList('https://fias.nalog.ru/Updates');
+
+        foreach ($fileList as $item) {
+            foreach (Fias::parse($item) as $addressObject) {
+                if (Fias::isActive($addressObject)) {
+                    yield $addressObject;
+                }
+            }
+        }
     }
 
     /**

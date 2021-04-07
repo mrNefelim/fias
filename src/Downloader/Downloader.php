@@ -20,21 +20,12 @@ class Downloader
         try {
             $this->wgetDownload($fiasBaseUrl, $archiveFileName);
             $this->unpack($archiveFileName, $this->tempDirectoryPath);
+            unlink($archiveFileName);
         } catch (DownloadException $exception) {
             throw new DownloadException('Ошибка скачивания: ' . $exception->getMessage());
         }
+
         return $this->tempDirectoryPath;
-    }
-
-    /**
-     * @param string $tempDirectoryPath
-     * @return $this
-     */
-    public function setTempDirectoryPath(string $tempDirectoryPath): self
-    {
-        $this->tempDirectoryPath = $tempDirectoryPath;
-
-        return $this;
     }
 
     /**
@@ -107,5 +98,16 @@ class Downloader
         }
 
         return true;
+    }
+
+    /**
+     * @param string $tempDirectoryPath
+     * @return $this
+     */
+    public function setTempDirectoryPath(string $tempDirectoryPath): self
+    {
+        $this->tempDirectoryPath = $tempDirectoryPath;
+
+        return $this;
     }
 }

@@ -52,7 +52,7 @@ class SiteParser
     {
         // парсим скрипт, в котором лежит нужная нам структура даннных
         preg_match('/<div id="GridDeltaFias" name="GridDeltaFias"><\/div><script>(.*?)<\/script>/', $html, $matches);
-        $jsonStructure = preg_replace('/.*"Data":\[(.*?)\],"Total".*/u', '[$1]', $matches[1]);
+        $jsonStructure = preg_replace('/.*"Data":\[(.*?)],"Total".*/u', '[$1]', $matches[1]);
 
         return json_decode($jsonStructure, true) ?? [];
     }
@@ -77,8 +77,9 @@ class SiteParser
                     $value['Columns'][0]
                 );
 
+                $link = str_replace('delta_', '', $link);
+
                 $hashList[$date->format('Y-m-d')] = $link;
-                str_replace('delta_', '', $link);
             }
         }
 

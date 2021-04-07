@@ -16,17 +16,14 @@ class Dbf
      */
     private array $headers = [];
 
+    /**
+     * @param string|null $fileName
+     * @throws CouldNotConnectException
+     */
     public function __construct(?string $fileName)
     {
         if ($fileName) {
             $this->connect($fileName);
-        }
-    }
-
-    public function __destruct()
-    {
-        if ($this->connection) {
-            dbase_close($this->connection);
         }
     }
 
@@ -45,6 +42,21 @@ class Dbf
         return $this;
     }
 
+    public function __destruct()
+    {
+        if ($this->connection) {
+            dbase_close($this->connection);
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getColumns(): array
+    {
+        return array_column($this->getHeaders(), 'name');
+    }
+
     /**
      * @return array
      */
@@ -54,11 +66,22 @@ class Dbf
     }
 
     /**
-     * @return string[]
+     * @return Generator
      */
-    public function getColumns(): array
+    public function getRecords(): Generator
     {
-        return array_column($this->headers, 'name');
+        $recordsCount = $this->getRecordsCount();
+        for ($i = 1; $i <= $recordsCount; $i++) {
+            yield $this->getRecordById($i);
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getRecordsCount(): int
+    {
+        return dbase_numrecords($this->connection);
     }
 
     /**
@@ -78,24 +101,5 @@ class Dbf
         }
 
         return $record;
-    }
-
-    /**
-     * @return int
-     */
-    public function getRecordsCount(): int
-    {
-        return dbase_numrecords($this->connection);
-    }
-
-    /**
-     * @return Generator
-     */
-    public function getRecords(): Generator
-    {
-        $recordsCount = $this->getRecordsCount();
-        for ($i = 1; $i <= $recordsCount; $i++) {
-            yield $this->getRecordById($i);
-        }
     }
 }
