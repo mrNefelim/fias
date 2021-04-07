@@ -1,6 +1,6 @@
 {
   "name": "nefelim/fias",
-  "type": "project",
+  "type": "package",
   "description": "Получаем информацию с сайта https://fias.nalog.ru/Updates",
   "authors": [
     {
