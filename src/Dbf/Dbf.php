@@ -22,9 +22,11 @@ class Dbf
      */
     public function __construct(?string $fileName)
     {
-        if ($fileName) {
-            $this->connect($fileName);
+        if (!$fileName || !is_file($fileName)) {
+            throw new CouldNotConnectException('Файл базы данных не существует ' . $fileName);
         }
+
+        $this->connect($fileName);
     }
 
     /**

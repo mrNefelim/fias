@@ -33,7 +33,7 @@ class SiteParser
             throw new DownloadException('Не найдено ссылок на архивы с базами ФИАС');
         }
 
-        $lastDate = $this->getLastFiasLastDownloadDate($hashList);
+        $lastDate = $this->getLastFiasDownloadDate($hashList);
 
         if (strtotime($lastDate) <= 0) {
             throw new DownloadException('Не удалось разобрать дату формирования базы ФИАС');
@@ -92,7 +92,7 @@ class SiteParser
      * @param array $hashList
      * @return string
      */
-    private function getLastFiasLastDownloadDate(array $hashList): string
+    private function getLastFiasDownloadDate(array $hashList): string
     {
         ksort($hashList);
         $lastDate = array_key_last($hashList);

@@ -34,10 +34,13 @@ class Fias implements FiasInterface
     {
         try {
             $folderPath = (new Downloader())->download($url);
+            $fileList = array_diff(scandir($folderPath), ['..', '.']);
 
-            return array_map(function ($link) use ($folderPath) {
-                return $folderPath . '/' . $link;
-            }, array_diff(scandir($folderPath), ['..', '.']));
+            return array_map(
+                function ($link) use ($folderPath) {
+                    return $folderPath . DIRECTORY_SEPARATOR . $link;
+                }, $fileList
+            );
         } catch (DownloadException $exception) {
             throw new FiasException($exception->getMessage());
         }
