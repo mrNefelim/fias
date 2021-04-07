@@ -1,6 +1,7 @@
 {
   "name": "nefelim/fias",
   "type": "package",
+  "license": "MIT",
   "description": "Получаем информацию с сайта https://fias.nalog.ru/Updates",
   "authors": [
     {
