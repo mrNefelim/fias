@@ -1,5 +1,6 @@
 {
   "name": "fias/fias",
+  "type": "project",
   "description": "Получаем информацию с сайта https://fias.nalog.ru/Updates",
   "authors": [
     {
@@ -14,9 +15,6 @@
     "ext-iconv": "*",
     "ext-zip": "*"
   },
-  "require-dev": {
-  },
-  "minimum-stability": "dev",
   "autoload": {
     "psr-4": {
       "Fias\\": "src/"
