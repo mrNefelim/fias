@@ -1,0 +1,23 @@
+{
+  "name": "fias/fias",
+  "description": "Получаем информацию с сайта https://fias.nalog.ru/Updates",
+  "authors": [
+    {
+      "name": "Дмитрий Сорокин",
+      "email": "dmasorokin@yandex.ru"
+    }
+  ],
+  "require": {
+    "php": ">=7.4.0",
+    "ext-json": "*",
+    "ext-dbase": "*"
+  },
+  "require-dev": {
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Fias\\": "src/"
+    }
+  }
+}
