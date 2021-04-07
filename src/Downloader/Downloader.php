@@ -2,6 +2,8 @@
 
 namespace Fias\Downloader;
 
+use ZipArchive;
+
 class Downloader
 {
     private string $tempDirectoryPath = '/tmp/fias';
@@ -20,7 +22,6 @@ class Downloader
         try {
             $this->wgetDownload($fiasBaseUrl, $archiveFileName);
             $this->unpack($archiveFileName, $this->tempDirectoryPath);
-            unlink($archiveFileName);
         } catch (DownloadException $exception) {
             throw new DownloadException('Ошибка скачивания: ' . $exception->getMessage());
         }
@@ -58,13 +59,9 @@ class Downloader
      */
     private function wgetDownload(string $link, string $filePath): bool
     {
-        $executeResponse = null;
-        $executeCodeExit = 0;
+        $saveSuccess = file_put_contents($filePath, file_get_contents($link));
 
-        $executeCommand = '/usr/bin/env wget --quiet --output-document=' . escapeshellarg($filePath) . ' ' . escapeshellarg($link);
-        exec($executeCommand, $executeResponse, $executeCodeExit);
-
-        if ($executeCodeExit) {
+        if (!$saveSuccess) {
             throw new DownloadException('Ошибка при попытке скачать архив базы ФИАС с сайта ведомства');
         }
 
@@ -81,20 +78,27 @@ class Downloader
      */
     public function unpack(string $filePath, string $unpackDirectory): bool
     {
-        /*
-         * -d - set directory $dirName
-         * -o - overwrite files
-         * -CLL - set files names to lowercase
-         * $archiveFileName - archive
-         * '*addrobj*' - filter files in archive by name
-         *
-         * in console must be phrase "All OK"
-        */
-        $executeCommand = "/usr/bin/env unzip -CLL -o -d " . escapeshellarg($unpackDirectory) . " " . escapeshellarg($filePath) . " *addr*";
+        try {
+            $fileList = [];
+            $zip = new ZipArchive();
 
-        $executeResponse = exec($executeCommand, $executeResponse, $executeCodeExit);
-        if ($executeCodeExit) {
-            throw new DownloadException('Ошибка при попытке распаковать архив базы ФИАС на диске');
+            if (!$zip->open($filePath) == TRUE) {
+                throw new DownloadException('Ошибка при попытке открыть архив базы ФИАС на диске');
+            }
+
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                # Собираем только файлы с addr в названии - это адреса
+                if (stripos($filename, 'addr') !== false) {
+                    $fileList[] = $filename;
+                }
+            }
+
+            $zip->extractTo($unpackDirectory, $fileList);
+            $zip->close();
+            unlink($filePath);
+        } catch (\Exception $exception) {
+            throw new DownloadException('Ошибка при попытке распаковать архив базы ФИАС на диске: ' . $exception->getMessage());
         }
 
         return true;

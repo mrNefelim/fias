@@ -11,7 +11,8 @@
     "php": ">=7.4.0",
     "ext-json": "*",
     "ext-dbase": "*",
-    "ext-iconv": "*"
+    "ext-iconv": "*",
+    "ext-zip": "*"
   },
   "require-dev": {
   },
